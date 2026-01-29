@@ -2,50 +2,27 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { 
-  GraduationCap, 
-  Users, 
-  MessageSquare, 
-  Calendar, 
-  ArrowRight,
-  CheckCircle2,
-  Sparkles
-} from 'lucide-react';
-
+import { GraduationCap, Users, MessageSquare, Calendar, ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 const LandingPage: React.FC = () => {
-  const features = [
-    {
-      icon: Users,
-      title: 'Alumni Directory',
-      description: 'Search and connect with thousands of alumni across industries and roles.',
-    },
-    {
-      icon: Sparkles,
-      title: 'AI-Powered Matching',
-      description: 'Get personalized mentor recommendations based on your goals and interests.',
-    },
-    {
-      icon: MessageSquare,
-      title: 'Direct Messaging',
-      description: 'Reach out to alumni for career advice, referrals, and guidance.',
-    },
-    {
-      icon: Calendar,
-      title: 'Events & Webinars',
-      description: 'Stay connected through networking events, reunions, and workshops.',
-    },
-  ];
-
-  const benefits = [
-    'Find mentors who match your career aspirations',
-    'Network with professionals in your target industry',
-    'Access exclusive job opportunities and referrals',
-    'Attend virtual and in-person alumni events',
-    'Build lasting professional relationships',
-  ];
-
-  return (
-    <div className="min-h-screen bg-background">
+  const features = [{
+    icon: Users,
+    title: 'Alumni Directory',
+    description: 'Search and connect with thousands of alumni across industries and roles.'
+  }, {
+    icon: Sparkles,
+    title: 'AI-Powered Matching',
+    description: 'Get personalized mentor recommendations based on your goals and interests.'
+  }, {
+    icon: MessageSquare,
+    title: 'Direct Messaging',
+    description: 'Reach out to alumni for career advice, referrals, and guidance.'
+  }, {
+    icon: Calendar,
+    title: 'Events & Webinars',
+    description: 'Stay connected through networking events, reunions, and workshops.'
+  }];
+  const benefits = ['Find mentors who match your career aspirations', 'Network with professionals in your target industry', 'Access exclusive job opportunities and referrals', 'Attend virtual and in-person alumni events', 'Build lasting professional relationships'];
+  return <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 gradient-hero opacity-5" />
@@ -92,19 +69,17 @@ const LandingPage: React.FC = () => {
           </div>
           <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <Card key={index} className="border-border/50 bg-card/50 backdrop-blur transition-all hover:shadow-card">
-                  <CardContent className="p-6">
+            const Icon = feature.icon;
+            return <Card key={index} className="border-border/50 bg-card/50 backdrop-blur transition-all hover:shadow-card">
+                  <CardContent className="p-6 border-2">
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg gradient-primary">
                       <Icon className="h-6 w-6 text-primary-foreground" />
                     </div>
                     <h3 className="font-semibold text-foreground">{feature.title}</h3>
                     <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
                   </CardContent>
-                </Card>
-              );
-            })}
+                </Card>;
+          })}
           </div>
         </div>
       </section>
@@ -121,12 +96,10 @@ const LandingPage: React.FC = () => {
                 Join thousands of students and alumni who are already benefiting from meaningful connections.
               </p>
               <ul className="mt-8 space-y-4">
-                {benefits.map((benefit, index) => (
-                  <li key={index} className="flex items-start gap-3">
+                {benefits.map((benefit, index) => <li key={index} className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 shrink-0 text-accent" />
                     <span className="text-foreground">{benefit}</span>
-                  </li>
-                ))}
+                  </li>)}
               </ul>
               <Button asChild className="mt-8">
                 <Link to="/auth?mode=signup">
@@ -183,8 +156,6 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default LandingPage;
