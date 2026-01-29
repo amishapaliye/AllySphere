@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,7 +18,7 @@
     --popover-foreground: 222 47% 11%;
 
     /* Navy Blue Primary */
-    --primary: 217 71% 27%;
+    --primary: 85 85.2273% 34.5098%;
     --primary-foreground: 0 0% 100%;
 
     /* Light Blue Secondary */
@@ -122,11 +123,11 @@
   .gradient-primary {
     background: var(--gradient-primary);
   }
-  
+
   .gradient-accent {
     background: var(--gradient-accent);
   }
-  
+
   .gradient-hero {
     background: var(--gradient-hero);
   }
