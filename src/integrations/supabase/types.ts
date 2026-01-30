@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      alumni_badges: {
+        Row: {
+          awarded_at: string
+          badge_name: string
+          badge_type: string
+          description: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          awarded_at?: string
+          badge_name: string
+          badge_type: string
+          description?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          awarded_at?: string
+          badge_name?: string
+          badge_type?: string
+          description?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      alumni_contributions: {
+        Row: {
+          events_hosted: number
+          id: string
+          jobs_posted: number
+          mentorships_completed: number
+          referrals_made: number
+          total_donations: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          events_hosted?: number
+          id?: string
+          jobs_posted?: number
+          mentorships_completed?: number
+          referrals_made?: number
+          total_donations?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          events_hosted?: number
+          id?: string
+          jobs_posted?: number
+          mentorships_completed?: number
+          referrals_made?: number
+          total_donations?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       alumni_details: {
         Row: {
           created_at: string
@@ -110,6 +170,56 @@ export type Database = {
         }
         Relationships: []
       }
+      donations: {
+        Row: {
+          amount: number
+          campaign_id: string
+          created_at: string
+          donor_id: string
+          id: string
+          is_anonymous: boolean
+          is_recurring: boolean
+          message: string | null
+          payment_method: string | null
+          payment_status: string
+          transaction_id: string | null
+        }
+        Insert: {
+          amount: number
+          campaign_id: string
+          created_at?: string
+          donor_id: string
+          id?: string
+          is_anonymous?: boolean
+          is_recurring?: boolean
+          message?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          transaction_id?: string | null
+        }
+        Update: {
+          amount?: number
+          campaign_id?: string
+          created_at?: string
+          donor_id?: string
+          id?: string
+          is_anonymous?: boolean
+          is_recurring?: boolean
+          message?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          transaction_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donations_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "fundraising_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           created_at: string
@@ -144,6 +254,140 @@ export type Database = {
           id?: string
           is_published?: boolean | null
           location?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fundraising_campaigns: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          current_amount: number
+          deadline: string | null
+          description: string | null
+          donor_count: number
+          id: string
+          image_url: string | null
+          is_active: boolean
+          target_amount: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          current_amount?: number
+          deadline?: string | null
+          description?: string | null
+          donor_count?: number
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          target_amount?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          current_amount?: number
+          deadline?: string | null
+          description?: string | null
+          donor_count?: number
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          target_amount?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      job_applications: {
+        Row: {
+          applicant_id: string
+          cover_letter: string | null
+          created_at: string
+          id: string
+          job_id: string
+          resume_url: string | null
+          status: string
+        }
+        Insert: {
+          applicant_id: string
+          cover_letter?: string | null
+          created_at?: string
+          id?: string
+          job_id: string
+          resume_url?: string | null
+          status?: string
+        }
+        Update: {
+          applicant_id?: string
+          cover_letter?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string
+          resume_url?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          apply_url: string | null
+          company: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_referral: boolean
+          job_type: string
+          location: string | null
+          posted_by: string
+          requirements: string | null
+          salary_range: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          apply_url?: string | null
+          company: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_referral?: boolean
+          job_type?: string
+          location?: string | null
+          posted_by: string
+          requirements?: string | null
+          salary_range?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          apply_url?: string | null
+          company?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_referral?: boolean
+          job_type?: string
+          location?: string | null
+          posted_by?: string
+          requirements?: string | null
+          salary_range?: string | null
           title?: string
           updated_at?: string
         }
