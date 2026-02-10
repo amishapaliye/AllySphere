@@ -36,16 +36,20 @@ const Navbar: React.FC = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: Home },
-    { path: '/alumni', label: 'Alumni', icon: Users },
-    { path: '/mentorship', label: 'Mentorship', icon: GraduationCap },
-    { path: '/jobs', label: 'Jobs', icon: Briefcase },
-    { path: '/events', label: 'Events', icon: Calendar },
-    { path: '/fundraising', label: 'Fundraising', icon: Heart },
-    { path: '/leaderboard', label: 'Leaderboard', icon: Trophy },
-    { path: '/messages', label: 'Messages', icon: MessageSquare },
+  const allNavItems = [
+    { path: '/dashboard', label: 'Dashboard', icon: Home, roles: ['student', 'alumni', 'faculty', 'admin'] },
+    { path: '/alumni', label: 'Alumni', icon: Users, roles: ['student', 'alumni', 'faculty', 'admin'] },
+    { path: '/mentorship', label: 'Mentorship', icon: GraduationCap, roles: ['student', 'alumni', 'faculty', 'admin'] },
+    { path: '/jobs', label: 'Jobs', icon: Briefcase, roles: ['student', 'alumni', 'faculty', 'admin'] },
+    { path: '/events', label: 'Events', icon: Calendar, roles: ['student', 'alumni', 'faculty', 'admin'] },
+    { path: '/fundraising', label: 'Fundraising', icon: Heart, roles: ['alumni', 'faculty', 'admin'] },
+    { path: '/leaderboard', label: 'Leaderboard', icon: Trophy, roles: ['alumni', 'faculty', 'admin'] },
+    { path: '/messages', label: 'Messages', icon: MessageSquare, roles: ['student', 'alumni', 'faculty', 'admin'] },
   ];
+
+  const navItems = allNavItems.filter(item => 
+    !userRole || item.roles.includes(userRole)
+  );
 
   const handleSignOut = async () => {
     await signOut();
