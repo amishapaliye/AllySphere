@@ -132,17 +132,35 @@ const Dashboard: React.FC = () => {
     );
   }
 
+  const getRoleBadge = () => {
+    const labels: Record<string, { label: string; className: string }> = {
+      student: { label: '🎓 Student', className: 'bg-blue-500/10 text-blue-700' },
+      alumni: { label: '🏛️ Alumni', className: 'bg-emerald-500/10 text-emerald-700' },
+      faculty: { label: '📋 Faculty / Admin', className: 'bg-amber-500/10 text-amber-700' },
+      admin: { label: '📋 Admin', className: 'bg-amber-500/10 text-amber-700' },
+    };
+    const role = labels[userRole || 'student'];
+    return <Badge className={role.className}>{role.label}</Badge>;
+  };
+
   return (
     <Layout>
       <div className="container py-8">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="font-display text-3xl font-bold text-foreground">
-            Welcome back, {profile?.full_name?.split(' ')[0]}!
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Here's what's happening in your network today.
-          </p>
+        <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="font-display text-3xl font-bold text-foreground">
+                Welcome back, {profile?.full_name?.split(' ')[0]}!
+              </h1>
+              {getRoleBadge()}
+            </div>
+            <p className="mt-1 text-muted-foreground">
+              {userRole === 'student' && 'Explore mentorship opportunities and connect with alumni.'}
+              {userRole === 'alumni' && 'Give back to your community — mentor, donate, and network.'}
+              {(userRole === 'faculty' || userRole === 'admin') && 'Manage and oversee the alumni network.'}
+            </p>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -284,7 +302,7 @@ const Dashboard: React.FC = () => {
             {/* Birthday Feed */}
             <BirthdayFeed />
 
-            {/* Quick Actions */}
+            {/* Quick Actions - Role specific */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Quick Actions</CardTitle>
@@ -296,8 +314,18 @@ const Dashboard: React.FC = () => {
                 </Button>
                 <Button variant="outline" className="justify-start" onClick={() => navigate('/mentorship')}>
                   <GraduationCap className="mr-2 h-4 w-4" />
-                  Request Mentorship
+                  {userRole === 'student' ? 'Request Mentorship' : 'Mentorship'}
                 </Button>
+                <Button variant="outline" className="justify-start" onClick={() => navigate('/jobs')}>
+                  <TrendingUp className="mr-2 h-4 w-4" />
+                  {userRole === 'alumni' ? 'Post a Job' : 'Browse Jobs'}
+                </Button>
+                {(userRole === 'alumni' || userRole === 'faculty' || userRole === 'admin') && (
+                  <Button variant="outline" className="justify-start" onClick={() => navigate('/fundraising')}>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    {userRole === 'alumni' ? 'Donate' : 'View Donations'}
+                  </Button>
+                )}
                 <Button variant="outline" className="justify-start" onClick={() => navigate('/messages')}>
                   <MessageSquare className="mr-2 h-4 w-4" />
                   Messages
