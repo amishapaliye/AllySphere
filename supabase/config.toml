@@ -1,1 +1,13 @@
 project_id = "ozltntisuvessgtrsmnm"
+
+[functions.create-razorpay-order]
+verify_jwt = false
+
+[functions.verify-razorpay-payment]
+verify_jwt = false
+
+[functions.ai-recommendations]
+verify_jwt = false
+
+[functions.seed-alumni]
+verify_jwt = false

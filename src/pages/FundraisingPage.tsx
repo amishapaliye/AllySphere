@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/layout/Layout";
@@ -9,20 +9,45 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Heart, Users, Target, Calendar, IndianRupee, Gift, Sparkles } from "lucide-react";
-import { format, differenceInDays } from "date-fns";
+import { Heart, Users, Target, IndianRupee, Gift, Sparkles } from "lucide-react";
+import { differenceInDays } from "date-fns";
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
+const loadRazorpayScript = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 
 const FundraisingPage = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const queryClient = useQueryClient();
   const [selectedCampaign, setSelectedCampaign] = useState<string | null>(null);
   const [donationAmount, setDonationAmount] = useState("");
   const [donationMessage, setDonationMessage] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isDonateOpen, setIsDonateOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    loadRazorpayScript();
+  }, []);
 
   const { data: campaigns, isLoading } = useQuery({
     queryKey: ["fundraising-campaigns"],
@@ -32,50 +57,119 @@ const FundraisingPage = () => {
         .select("*")
         .eq("is_active", true)
         .order("created_at", { ascending: false });
-      
       if (error) throw error;
       return data;
-    },
-  });
-
-  const donateMutation = useMutation({
-    mutationFn: async () => {
-      if (!user?.id || !selectedCampaign) throw new Error("Not authenticated");
-      
-      const amount = parseFloat(donationAmount);
-      if (isNaN(amount) || amount <= 0) throw new Error("Invalid amount");
-      
-      const { error } = await supabase.from("donations").insert({
-        campaign_id: selectedCampaign,
-        donor_id: user.id,
-        amount,
-        message: donationMessage || null,
-        is_anonymous: isAnonymous,
-        payment_status: "completed", // Simulated - in production, integrate payment gateway
-      });
-      
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["fundraising-campaigns"] });
-      setIsDonateOpen(false);
-      setDonationAmount("");
-      setDonationMessage("");
-      setIsAnonymous(false);
-      setSelectedCampaign(null);
-      toast({ 
-        title: "Thank you for your donation! 🎉", 
-        description: "Your contribution makes a difference." 
-      });
-    },
-    onError: (error) => {
-      toast({ title: "Error processing donation", description: error.message, variant: "destructive" });
     },
   });
 
   const openDonateDialog = (campaignId: string) => {
     setSelectedCampaign(campaignId);
     setIsDonateOpen(true);
+  };
+
+  const handleDonate = async () => {
+    if (!user || !selectedCampaign) return;
+
+    const amount = parseFloat(donationAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast({ title: "Invalid amount", variant: "destructive" });
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        throw new Error("Failed to load Razorpay. Please check your internet connection.");
+      }
+
+      // Create order via edge function
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+
+      const orderRes = await supabase.functions.invoke("create-razorpay-order", {
+        body: { amount, campaign_id: selectedCampaign },
+      });
+
+      if (orderRes.error) throw new Error(orderRes.error.message || "Failed to create order");
+      const orderData = orderRes.data;
+
+      const campaign = campaigns?.find((c) => c.id === selectedCampaign);
+
+      // Open Razorpay checkout
+      const options = {
+        key: orderData.key_id,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "ACET Alumni Association",
+        description: campaign?.title || "Donation",
+        order_id: orderData.order_id,
+        prefill: {
+          email: user.email,
+          name: profile?.full_name || "",
+        },
+        theme: { color: "#6366f1" },
+        handler: async (response: any) => {
+          try {
+            // Verify payment server-side
+            const verifyRes = await supabase.functions.invoke("verify-razorpay-payment", {
+              body: {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                campaign_id: selectedCampaign,
+                amount,
+                message: donationMessage || null,
+                is_anonymous: isAnonymous,
+              },
+            });
+
+            if (verifyRes.error) throw new Error(verifyRes.error.message);
+
+            queryClient.invalidateQueries({ queryKey: ["fundraising-campaigns"] });
+            setIsDonateOpen(false);
+            setDonationAmount("");
+            setDonationMessage("");
+            setIsAnonymous(false);
+            setSelectedCampaign(null);
+            toast({
+              title: "Thank you for your donation! 🎉",
+              description: "Your payment has been verified and recorded.",
+            });
+          } catch (err: any) {
+            toast({
+              title: "Payment verification failed",
+              description: err.message,
+              variant: "destructive",
+            });
+          } finally {
+            setIsProcessing(false);
+          }
+        },
+        modal: {
+          ondismiss: () => setIsProcessing(false),
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", (response: any) => {
+        setIsProcessing(false);
+        toast({
+          title: "Payment failed",
+          description: response.error?.description || "Something went wrong",
+          variant: "destructive",
+        });
+      });
+      rzp.open();
+    } catch (err: any) {
+      setIsProcessing(false);
+      toast({
+        title: "Error",
+        description: err.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const quickAmounts = [500, 1000, 2500, 5000, 10000];
@@ -93,7 +187,7 @@ const FundraisingPage = () => {
             Support Your Alma Mater
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Your contributions help build better labs, fund scholarships, and create opportunities 
+            Your contributions help build better labs, fund scholarships, and create opportunities
             for the next generation of ACET students.
           </p>
         </div>
@@ -116,7 +210,7 @@ const FundraisingPage = () => {
 
         {/* Campaigns Grid */}
         <h2 className="text-2xl font-bold mb-6">Active Campaigns</h2>
-        
+
         {isLoading ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
@@ -140,19 +234,19 @@ const FundraisingPage = () => {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {campaigns?.map((campaign) => {
-              const progress = campaign.target_amount > 0 
-                ? (Number(campaign.current_amount) / Number(campaign.target_amount)) * 100 
+              const progress = campaign.target_amount > 0
+                ? (Number(campaign.current_amount) / Number(campaign.target_amount)) * 100
                 : 0;
-              const daysLeft = campaign.deadline 
-                ? differenceInDays(new Date(campaign.deadline), new Date()) 
+              const daysLeft = campaign.deadline
+                ? differenceInDays(new Date(campaign.deadline), new Date())
                 : null;
 
               return (
                 <Card key={campaign.id} className="overflow-hidden hover:shadow-lg transition-shadow group">
                   {campaign.image_url ? (
                     <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/40 relative overflow-hidden">
-                      <img 
-                        src={campaign.image_url} 
+                      <img
+                        src={campaign.image_url}
                         alt={campaign.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
@@ -162,7 +256,7 @@ const FundraisingPage = () => {
                       <Target className="w-16 h-16 text-primary/50" />
                     </div>
                   )}
-                  
+
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-lg line-clamp-2">{campaign.title}</CardTitle>
@@ -178,7 +272,7 @@ const FundraisingPage = () => {
                       </CardDescription>
                     )}
                   </CardHeader>
-                  
+
                   <CardContent className="space-y-4">
                     <div>
                       <div className="flex justify-between text-sm mb-2">
@@ -191,7 +285,7 @@ const FundraisingPage = () => {
                       </div>
                       <Progress value={Math.min(progress, 100)} className="h-2" />
                     </div>
-                    
+
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Users className="w-4 h-4" />
@@ -200,10 +294,10 @@ const FundraisingPage = () => {
                       <span>{Math.round(progress)}% funded</span>
                     </div>
                   </CardContent>
-                  
+
                   <CardFooter>
-                    <Button 
-                      className="w-full bg-primary hover:bg-primary/90"
+                    <Button
+                      className="w-full"
                       onClick={() => openDonateDialog(campaign.id)}
                       disabled={!user}
                     >
@@ -223,12 +317,11 @@ const FundraisingPage = () => {
             <DialogHeader>
               <DialogTitle>Make a Donation</DialogTitle>
               <DialogDescription>
-                Choose an amount to contribute to this campaign
+                Choose an amount to contribute. Payment is processed securely via Razorpay.
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-6 py-4">
-              {/* Quick Amount Buttons */}
               <div className="grid grid-cols-5 gap-2">
                 {quickAmounts.map((amount) => (
                   <Button
@@ -237,7 +330,7 @@ const FundraisingPage = () => {
                     size="sm"
                     onClick={() => setDonationAmount(String(amount))}
                   >
-                    ₹{amount >= 1000 ? `${amount/1000}K` : amount}
+                    ₹{amount >= 1000 ? `${amount / 1000}K` : amount}
                   </Button>
                 ))}
               </div>
@@ -277,16 +370,16 @@ const FundraisingPage = () => {
               </div>
 
               <Button
-                className="w-full bg-primary hover:bg-primary/90"
+                className="w-full"
                 size="lg"
-                onClick={() => donateMutation.mutate()}
-                disabled={!donationAmount || parseFloat(donationAmount) <= 0 || donateMutation.isPending}
+                onClick={handleDonate}
+                disabled={!donationAmount || parseFloat(donationAmount) <= 0 || isProcessing}
               >
-                {donateMutation.isPending ? "Processing..." : `Donate ₹${donationAmount || 0}`}
+                {isProcessing ? "Processing..." : `Pay ₹${donationAmount || 0} via Razorpay`}
               </Button>
 
               <p className="text-xs text-center text-muted-foreground">
-                🔒 Your payment is secure. All transactions are encrypted.
+                🔒 Secured by Razorpay. All transactions are verified server-side.
               </p>
             </div>
           </DialogContent>
