@@ -151,9 +151,11 @@ const AlumniDirectory: React.FC = () => {
 
   const handleConnect = async (alumniUserId: string) => {
     try {
-      const { error } = await supabase.from('connections').insert({
-        requester_id: user?.id,
-        receiver_id: alumniUserId,
+      // Create a mentorship request so it shows in Mentorship Hub
+      const { error } = await supabase.from('mentorship_requests').insert({
+        student_id: user?.id,
+        alumni_id: alumniUserId,
+        message: 'Connection request from Alumni Directory',
         status: 'pending',
       });
 
@@ -161,22 +163,22 @@ const AlumniDirectory: React.FC = () => {
         if (error.code === '23505') {
           toast({
             title: 'Already connected',
-            description: 'You have already sent a connection request.',
+            description: 'You have already sent a request to this alumni.',
           });
         } else {
           throw error;
         }
       } else {
         toast({
-          title: 'Connection request sent',
-          description: 'Your connection request has been sent.',
+          title: 'Request sent!',
+          description: 'Your request has been sent. Check Mentorship Hub for updates.',
         });
       }
     } catch (error) {
-      console.error('Error sending connection:', error);
+      console.error('Error sending request:', error);
       toast({
         title: 'Error',
-        description: 'Failed to send connection request.',
+        description: 'Failed to send request.',
         variant: 'destructive',
       });
     }

@@ -44,24 +44,47 @@ const Dashboard: React.FC = () => {
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch recommended alumni (mentors) - use profiles_public to avoid exposing PII
+      // Fetch current user's skills/interests for matching
+      let userSkills: string[] = [];
+      let userMentorshipAreas: string[] = [];
+      const { data: userAlumniData } = await supabase
+        .from('alumni_details')
+        .select('skills, mentorship_areas')
+        .eq('user_id', user?.id || '')
+        .maybeSingle();
+      
+      if (userAlumniData) {
+        userSkills = userAlumniData.skills || [];
+        userMentorshipAreas = userAlumniData.mentorship_areas || [];
+      }
+
+      // Fetch available mentors
       const { data: alumniData } = await supabase
         .from('alumni_details')
         .select('*, profiles:profiles_public(*)')
         .eq('is_mentor_available', true)
-        .limit(3);
+        .neq('user_id', user?.id || '');
 
       if (alumniData) {
-        setRecommendedAlumni(alumniData as unknown as AlumniWithProfile[]);
+        // Score mentors by matching skills/interests
+        const scored = (alumniData as unknown as AlumniWithProfile[]).map(mentor => {
+          const mentorSkills = mentor.skills || [];
+          const mentorAreas = mentor.mentorship_areas || [];
+          const skillMatch = mentorSkills.filter(s => userSkills.includes(s)).length;
+          const areaMatch = mentorAreas.filter(a => userMentorshipAreas.includes(a)).length;
+          return { mentor, score: skillMatch + areaMatch };
+        });
+        scored.sort((a, b) => b.score - a.score);
+        setRecommendedAlumni(scored.slice(0, 3).map(s => s.mentor));
       }
 
-      // Fetch upcoming events
+      // Fetch recent events (past events, most recent first)
       const { data: eventsData } = await supabase
         .from('events')
         .select('*')
         .eq('is_published', true)
-        .gte('event_date', new Date().toISOString())
-        .order('event_date', { ascending: true })
+        .lte('event_date', new Date().toISOString())
+        .order('event_date', { ascending: false })
         .limit(3);
 
       if (eventsData) {
@@ -260,10 +283,10 @@ const Dashboard: React.FC = () => {
               </Card>
             )}
 
-            {/* Upcoming Events */}
+            {/* Recent Events */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Upcoming Events</CardTitle>
+                <CardTitle>Recent Events</CardTitle>
                 <Button variant="ghost" size="sm" onClick={() => navigate('/events')}>
                   View All
                   <ArrowRight className="ml-1 h-4 w-4" />
@@ -296,7 +319,7 @@ const Dashboard: React.FC = () => {
                 ) : (
                   <div className="py-8 text-center">
                     <Calendar className="mx-auto h-12 w-12 text-muted-foreground/50" />
-                    <p className="mt-4 text-muted-foreground">No upcoming events.</p>
+                    <p className="mt-4 text-muted-foreground">No recent events.</p>
                   </div>
                 )}
               </CardContent>
