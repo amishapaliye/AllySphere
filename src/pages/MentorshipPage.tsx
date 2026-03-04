@@ -266,88 +266,104 @@ const MentorshipPage: React.FC = () => {
 
           <TabsContent value="mentors">
             {mentors.length > 0 ? (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {mentors.map((mentor) => (
-                  <Card key={mentor.id} className="overflow-hidden">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <Avatar className="h-14 w-14">
-                          <AvatarImage src={mentor.profiles?.avatar_url} />
-                          <AvatarFallback className="bg-primary/10 text-primary">
-                            {getInitials(mentor.profiles?.full_name || '')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-foreground">
-                            {mentor.profiles?.full_name}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {mentor.job_title} at {mentor.current_company}
-                          </p>
-                        </div>
-                      </div>
-
-                      {mentor.mentorship_areas && mentor.mentorship_areas.length > 0 && (
-                        <div className="mt-4">
-                          <p className="text-xs font-medium text-muted-foreground mb-2">Can help with:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {mentor.mentorship_areas.slice(0, 3).map((area, i) => (
-                              <Badge key={i} variant="outline" className="text-xs">
-                                {area}
-                              </Badge>
-                            ))}
+              <>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {(showAllMentors ? mentors : mentors.slice(0, 1)).map((mentor) => (
+                    <Card key={mentor.id} className="overflow-hidden">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <Avatar className="h-14 w-14">
+                            <AvatarImage src={mentor.profiles?.avatar_url} />
+                            <AvatarFallback className="bg-primary/10 text-primary">
+                              {getInitials(mentor.profiles?.full_name || '')}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-foreground">
+                              {mentor.profiles?.full_name}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              {mentor.job_title} at {mentor.current_company}
+                            </p>
                           </div>
                         </div>
-                      )}
 
-                      <Dialog open={dialogOpen && selectedMentor?.id === mentor.id} onOpenChange={(open) => {
-                        setDialogOpen(open);
-                        if (!open) setSelectedMentor(null);
-                      }}>
-                        <DialogTrigger asChild>
-                          <Button 
-                            className="w-full mt-4" 
-                            onClick={() => setSelectedMentor(mentor)}
-                          >
-                            Request Mentorship
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Request Mentorship</DialogTitle>
-                            <DialogDescription>
-                              Send a mentorship request to {mentor.profiles?.full_name}
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <Textarea
-                              placeholder="Introduce yourself and explain what kind of guidance you're looking for..."
-                              value={requestMessage}
-                              onChange={(e) => setRequestMessage(e.target.value)}
-                              rows={4}
-                            />
+                        {mentor.mentorship_areas && mentor.mentorship_areas.length > 0 && (
+                          <div className="mt-4">
+                            <p className="text-xs font-medium text-muted-foreground mb-2">Can help with:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {mentor.mentorship_areas.slice(0, 3).map((area, i) => (
+                                <Badge key={i} variant="outline" className="text-xs">
+                                  {area}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
-                          <DialogFooter>
-                            <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                              Cancel
+                        )}
+
+                        <Dialog open={dialogOpen && selectedMentor?.id === mentor.id} onOpenChange={(open) => {
+                          setDialogOpen(open);
+                          if (!open) setSelectedMentor(null);
+                        }}>
+                          <DialogTrigger asChild>
+                            <Button 
+                              className="w-full mt-4" 
+                              onClick={() => setSelectedMentor(mentor)}
+                            >
+                              Request Mentorship
                             </Button>
-                            <Button onClick={handleRequestMentorship} disabled={submitting}>
-                              {submitting ? (
-                                <>
-                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                  Sending...
-                                </>
-                              ) : (
-                                'Send Request'
-                              )}
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Request Mentorship</DialogTitle>
+                              <DialogDescription>
+                                Send a mentorship request to {mentor.profiles?.full_name}
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4">
+                              <Textarea
+                                placeholder="Introduce yourself and explain what kind of guidance you're looking for..."
+                                value={requestMessage}
+                                onChange={(e) => setRequestMessage(e.target.value)}
+                                rows={4}
+                              />
+                            </div>
+                            <DialogFooter>
+                              <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                                Cancel
+                              </Button>
+                              <Button onClick={handleRequestMentorship} disabled={submitting}>
+                                {submitting ? (
+                                  <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Sending...
+                                  </>
+                                ) : (
+                                  'Send Request'
+                                )}
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+                {!showAllMentors && mentors.length > 1 && (
+                  <div className="mt-4 text-center">
+                    <Button variant="outline" onClick={() => setShowAllMentors(true)}>
+                      View More ({mentors.length - 1} more)
+                    </Button>
+                  </div>
+                )}
+                {showAllMentors && mentors.length > 1 && (
+                  <div className="mt-4 text-center">
+                    <Button variant="outline" onClick={() => setShowAllMentors(false)}>
+                      Show Less
+                    </Button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="py-16 text-center">
                 <GraduationCap className="mx-auto h-12 w-12 text-muted-foreground/50" />
