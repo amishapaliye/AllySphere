@@ -20,7 +20,7 @@ import {
   Sparkles,
   GraduationCap
 } from 'lucide-react';
-import { AlumniWithProfile, Event, Announcement } from '@/types/database';
+import { Event, Announcement } from '@/types/database';
 
 const Dashboard: React.FC = () => {
   const { user, profile, userRole, loading: authLoading } = useAuth();
