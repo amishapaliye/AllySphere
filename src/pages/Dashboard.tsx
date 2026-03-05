@@ -58,24 +58,31 @@ const Dashboard: React.FC = () => {
         userMentorshipAreas = userAlumniData.mentorship_areas || [];
       }
 
-      // Fetch available mentors
-      const { data: alumniData } = await supabase
-        .from('alumni_details')
-        .select('*, profiles:profiles_public(*)')
-        .eq('is_mentor_available', true)
-        .neq('user_id', user?.id || '');
+      // Fetch batch mates (same graduation year)
+      const { data: userProfile } = await supabase
+        .from('profiles')
+        .select('graduation_year')
+        .eq('user_id', user?.id || '')
+        .maybeSingle();
 
-      if (alumniData) {
-        // Score mentors by matching skills/interests
-        const scored = (alumniData as unknown as AlumniWithProfile[]).map(mentor => {
-          const mentorSkills = mentor.skills || [];
-          const mentorAreas = mentor.mentorship_areas || [];
-          const skillMatch = mentorSkills.filter(s => userSkills.includes(s)).length;
-          const areaMatch = mentorAreas.filter(a => userMentorshipAreas.includes(a)).length;
-          return { mentor, score: skillMatch + areaMatch };
-        });
-        scored.sort((a, b) => b.score - a.score);
-        setRecommendedAlumni(scored.slice(0, 3).map(s => s.mentor));
+      if (userProfile?.graduation_year) {
+        const { data: batchMateProfiles } = await supabase
+          .from('profiles_public')
+          .select('user_id')
+          .eq('graduation_year', userProfile.graduation_year)
+          .neq('user_id', user?.id || '');
+
+        if (batchMateProfiles && batchMateProfiles.length > 0) {
+          const batchUserIds = batchMateProfiles.map(p => p.user_id).filter(Boolean) as string[];
+          const { data: alumniData } = await supabase
+            .from('alumni_details')
+            .select('*, profiles:profiles_public(*)')
+            .in('user_id', batchUserIds);
+
+          if (alumniData) {
+            setRecommendedAlumni((alumniData as unknown as AlumniWithProfile[]).slice(0, 3));
+          }
+        }
       }
 
       // Fetch recent events (past events, most recent first)
@@ -235,10 +242,10 @@ const Dashboard: React.FC = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-accent" />
-                    <CardTitle>Available Mentors</CardTitle>
+                    <Users className="h-5 w-5 text-accent" />
+                    <CardTitle>Batch Mates</CardTitle>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => navigate('/mentorship')}>
+                  <Button variant="ghost" size="sm" onClick={() => navigate('/alumni')}>
                     View All
                     <ArrowRight className="ml-1 h-4 w-4" />
                   </Button>
@@ -261,19 +268,19 @@ const Dashboard: React.FC = () => {
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-foreground">{alumni.profiles?.full_name}</p>
                             <p className="text-sm text-muted-foreground truncate">
-                              {alumni.job_title} at {alumni.current_company}
+                              {alumni.job_title ? `${alumni.job_title} at ${alumni.current_company}` : alumni.profiles?.department || 'Alumni'}
                             </p>
                           </div>
                           <Badge variant="secondary" className="shrink-0">
-                            Mentor
+                            Batch {alumni.profiles?.graduation_year}
                           </Badge>
                         </div>
                       ))}
                     </div>
                   ) : (
                     <div className="py-8 text-center">
-                      <GraduationCap className="mx-auto h-12 w-12 text-muted-foreground/50" />
-                      <p className="mt-4 text-muted-foreground">No mentors available yet.</p>
+                      <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
+                      <p className="mt-4 text-muted-foreground">No batch mates found yet.</p>
                       <Button variant="outline" className="mt-4" onClick={() => navigate('/alumni')}>
                         Browse Alumni
                       </Button>
