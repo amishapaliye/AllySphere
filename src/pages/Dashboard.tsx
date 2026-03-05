@@ -242,10 +242,10 @@ const Dashboard: React.FC = () => {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-accent" />
-                    <CardTitle>Available Mentors</CardTitle>
+                    <Users className="h-5 w-5 text-accent" />
+                    <CardTitle>Batch Mates</CardTitle>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => navigate('/mentorship')}>
+                  <Button variant="ghost" size="sm" onClick={() => navigate('/alumni')}>
                     View All
                     <ArrowRight className="ml-1 h-4 w-4" />
                   </Button>
@@ -268,19 +268,19 @@ const Dashboard: React.FC = () => {
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-foreground">{alumni.profiles?.full_name}</p>
                             <p className="text-sm text-muted-foreground truncate">
-                              {alumni.job_title} at {alumni.current_company}
+                              {alumni.job_title ? `${alumni.job_title} at ${alumni.current_company}` : alumni.profiles?.department || 'Alumni'}
                             </p>
                           </div>
                           <Badge variant="secondary" className="shrink-0">
-                            Mentor
+                            Batch {alumni.profiles?.graduation_year}
                           </Badge>
                         </div>
                       ))}
                     </div>
                   ) : (
                     <div className="py-8 text-center">
-                      <GraduationCap className="mx-auto h-12 w-12 text-muted-foreground/50" />
-                      <p className="mt-4 text-muted-foreground">No mentors available yet.</p>
+                      <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
+                      <p className="mt-4 text-muted-foreground">No batch mates found yet.</p>
                       <Button variant="outline" className="mt-4" onClick={() => navigate('/alumni')}>
                         Browse Alumni
                       </Button>
