@@ -436,7 +436,9 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          edited_at: string | null
           id: string
+          is_deleted: boolean
           is_read: boolean | null
           receiver_id: string
           sender_id: string
@@ -444,7 +446,9 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string
+          edited_at?: string | null
           id?: string
+          is_deleted?: boolean
           is_read?: boolean | null
           receiver_id: string
           sender_id: string
@@ -452,7 +456,9 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string
+          edited_at?: string | null
           id?: string
+          is_deleted?: boolean
           is_read?: boolean | null
           receiver_id?: string
           sender_id?: string
