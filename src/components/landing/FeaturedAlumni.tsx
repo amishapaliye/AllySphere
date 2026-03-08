@@ -4,72 +4,67 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Building2, Briefcase, Trophy, ArrowRight, Star } from 'lucide-react';
-
-interface FeaturedAlumniMember {
-  id: string;
-  name: string;
-  avatar?: string;
-  jobTitle: string;
-  company: string;
-  batch: number;
-  skills: string[];
-  achievements: string[];
-  isTopContributor?: boolean;
-}
+import { Building2, Briefcase, Trophy, ArrowRight, Star, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const FeaturedAlumni: React.FC = () => {
-  // Mock data for featured alumni - will be replaced with real data after auth
-  const featuredAlumni: FeaturedAlumniMember[] = [
-    {
-      id: '1',
-      name: 'Dr. Priya Sharma',
-      jobTitle: 'Senior Data Scientist',
-      company: 'Google',
-      batch: 2015,
-      skills: ['Machine Learning', 'Python', 'AI'],
-      achievements: ['Mentor Champion', 'Top Referrer'],
-      isTopContributor: true,
-    },
-    {
-      id: '2',
-      name: 'Rahul Deshmukh',
-      jobTitle: 'Engineering Manager',
-      company: 'Microsoft',
-      batch: 2012,
-      skills: ['Cloud', 'DevOps', 'Leadership'],
-      achievements: ['10+ Mentorships'],
-      isTopContributor: true,
-    },
-    {
-      id: '3',
-      name: 'Sneha Kulkarni',
-      jobTitle: 'Product Lead',
-      company: 'Amazon',
-      batch: 2016,
-      skills: ['Product Management', 'Strategy'],
-      achievements: ['Top Donor'],
-    },
-    {
-      id: '4',
-      name: 'Amit Joshi',
-      jobTitle: 'CTO & Co-founder',
-      company: 'TechStartup Inc.',
-      batch: 2010,
-      skills: ['Entrepreneurship', 'Full Stack'],
-      achievements: ['Event Host', '5+ Jobs Posted'],
-      isTopContributor: true,
-    },
-  ];
+  const { data: featured = [], isLoading } = useQuery({
+    queryKey: ['featured-alumni-landing'],
+    queryFn: async () => {
+      const { data: contributions, error } = await supabase
+        .from('alumni_contributions')
+        .select('*, profiles!inner(full_name, avatar_url, graduation_year, department, user_id)')
+        .order('mentorships_completed', { ascending: false })
+        .limit(4);
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
+      if (error) throw error;
+
+      // Also fetch alumni_details for job info
+      const userIds = (contributions || []).map((c: any) => c.user_id);
+      if (userIds.length === 0) return [];
+
+      const { data: details } = await supabase
+        .from('alumni_details')
+        .select('user_id, job_title, current_company, skills')
+        .in('user_id', userIds);
+
+      const detailsMap = new Map((details || []).map((d: any) => [d.user_id, d]));
+
+      return (contributions || []).map((c: any) => {
+        const d = detailsMap.get(c.user_id);
+        const score = (c.mentorships_completed * 10) + (c.referrals_made * 5) + (c.jobs_posted * 5) + (c.events_hosted * 8) + Number(c.total_donations) / 100;
+        return {
+          id: c.user_id,
+          name: c.profiles.full_name,
+          avatar: c.profiles.avatar_url,
+          batch: c.profiles.graduation_year,
+          jobTitle: d?.job_title || 'Alumni',
+          company: d?.current_company || '',
+          skills: d?.skills?.slice(0, 2) || [],
+          score,
+          mentorships: c.mentorships_completed,
+          jobsPosted: c.jobs_posted,
+          referrals: c.referrals_made,
+        };
+      }).sort((a: any, b: any) => b.score - a.score);
+    },
+  });
+
+  const getInitials = (name: string) =>
+    name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-muted/30 border-y border-border">
+        <div className="container flex justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </section>
+    );
+  }
+
+  if (featured.length === 0) return null;
 
   return (
     <section className="py-16 bg-muted/30 border-y border-border">
@@ -96,12 +91,12 @@ const FeaturedAlumni: React.FC = () => {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {featuredAlumni.map((alumni, index) => (
-            <Card 
-              key={alumni.id} 
+          {featured.map((alumni: any, index: number) => (
+            <Card
+              key={alumni.id}
               className="overflow-hidden transition-all hover:shadow-card hover:border-primary/30 group relative"
             >
-              {alumni.isTopContributor && (
+              {index < 3 && (
                 <div className="absolute top-3 right-3 z-10">
                   <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">
                     <Trophy className="h-3 w-3 mr-1" />
@@ -117,39 +112,57 @@ const FeaturedAlumni: React.FC = () => {
                       {getInitials(alumni.name)}
                     </AvatarFallback>
                   </Avatar>
-                  
+
                   <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
                     {alumni.name}
                   </h3>
-                  
-                  <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                    <Briefcase className="h-3 w-3" />
-                    {alumni.jobTitle}
-                  </p>
-                  
-                  <p className="text-sm text-primary flex items-center gap-1">
-                    <Building2 className="h-3 w-3" />
-                    {alumni.company}
-                  </p>
-                  
-                  <Badge variant="outline" className="mt-2 text-xs">
-                    Batch of {alumni.batch}
-                  </Badge>
+
+                  {alumni.jobTitle && (
+                    <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                      <Briefcase className="h-3 w-3" />
+                      {alumni.jobTitle}
+                    </p>
+                  )}
+
+                  {alumni.company && (
+                    <p className="text-sm text-primary flex items-center gap-1">
+                      <Building2 className="h-3 w-3" />
+                      {alumni.company}
+                    </p>
+                  )}
+
+                  {alumni.batch && (
+                    <Badge variant="outline" className="mt-2 text-xs">
+                      Batch of {alumni.batch}
+                    </Badge>
+                  )}
+
+                  {alumni.skills.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-1 justify-center">
+                      {alumni.skills.map((skill: string, i: number) => (
+                        <Badge key={i} variant="secondary" className="text-xs">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
 
                   <div className="mt-3 flex flex-wrap gap-1 justify-center">
-                    {alumni.skills.slice(0, 2).map((skill, i) => (
-                      <Badge key={i} variant="secondary" className="text-xs">
-                        {skill}
+                    {alumni.mentorships > 0 && (
+                      <Badge className="text-xs bg-accent/10 text-accent border-accent/30">
+                        {alumni.mentorships} Mentorships
                       </Badge>
-                    ))}
-                  </div>
-
-                  <div className="mt-3 flex flex-wrap gap-1 justify-center">
-                    {alumni.achievements.map((achievement, i) => (
-                      <Badge key={i} className="text-xs bg-accent/10 text-accent border-accent/30">
-                        {achievement}
+                    )}
+                    {alumni.jobsPosted > 0 && (
+                      <Badge className="text-xs bg-accent/10 text-accent border-accent/30">
+                        {alumni.jobsPosted} Jobs Posted
                       </Badge>
-                    ))}
+                    )}
+                    {alumni.referrals > 0 && (
+                      <Badge className="text-xs bg-accent/10 text-accent border-accent/30">
+                        {alumni.referrals} Referrals
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </CardContent>
