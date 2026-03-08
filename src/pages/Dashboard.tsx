@@ -137,9 +137,9 @@ const Dashboard: React.FC = () => {
 
   return (
     <Layout>
-      <div className="container py-8">
+      <div className="container py-6">
         {/* Welcome Section */}
-        <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
+        <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
           <div>
             <div className="flex items-center gap-3 mb-1">
               <h1 className="font-display text-3xl font-bold text-foreground">
@@ -156,7 +156,7 @@ const Dashboard: React.FC = () => {
 
         {/* Announcements Banner */}
         {announcements.length > 0 && (
-          <div className="mb-8 space-y-3">
+          <div className="mb-6 space-y-2">
             {announcements.map((announcement) => (
               <div
                 key={announcement.id}
@@ -183,7 +183,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="mb-8 grid gap-4 sm:grid-cols-3">
+        <div className="mb-6 grid gap-3 sm:grid-cols-3">
           <Card>
             <CardContent className="flex items-center gap-4 p-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -219,9 +219,9 @@ const Dashboard: React.FC = () => {
           </Card>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-3">
+        <div className="grid gap-6 lg:grid-cols-3">
           {/* Main Content */}
-          <div className="space-y-8 lg:col-span-2">
+          <div className="space-y-6 lg:col-span-2">
             {/* AI Recommendations - Students only */}
             {userRole === 'student' && <RecommendedMentors />}
 
@@ -272,7 +272,7 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Birthday Feed */}
             <BirthdayFeed />
 

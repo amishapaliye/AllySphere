@@ -105,9 +105,9 @@ const LandingPage: React.FC = () => {
       {/* Hero Section with Search */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 gradient-hero opacity-5" />
-        <div className="container relative py-16 lg:py-24">
+        <div className="container relative py-10 lg:py-14">
           <div className="mx-auto max-w-4xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
               <Sparkles className="h-4 w-4" />
               AI-Powered Alumni Network Platform
             </div>
@@ -118,18 +118,18 @@ const LandingPage: React.FC = () => {
             <p className="mt-4 font-display text-xl text-primary font-semibold">
               "Where Alumni, Students, and Futures Connect."
             </p>
-            <p className="mt-6 text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto">
+            <p className="mt-4 text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto">
               AllySphere bridges the gap between students, alumni, and faculty of ACET. 
               Find the perfect mentor, discover career opportunities, and build 
               your professional network within your college community.
             </p>
             
             {/* Search Bar */}
-            <div className="mt-10">
+            <div className="mt-6">
               <AlumniSearchBar />
             </div>
 
-            <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Button asChild size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Link to="/auth?mode=signup">
                   Join AllySphere
@@ -148,7 +148,7 @@ const LandingPage: React.FC = () => {
       <FundraisingProgress />
 
       {/* Stats Section */}
-      <section className="border-y border-border bg-primary/5 py-12">
+      <section className="border-y border-border bg-primary/5 py-8">
         <div className="container">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             {stats.map((stat, index) => (
@@ -165,17 +165,17 @@ const LandingPage: React.FC = () => {
       <FeaturedAlumni />
 
       {/* Features Section */}
-      <section className="py-20">
+      <section className="py-12">
         <div className="container">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold text-foreground sm:text-4xl">
+            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
               Everything You Need to Succeed
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
               Powerful tools designed to help you connect with the right people and grow professionally.
             </p>
           </div>
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
@@ -195,17 +195,17 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Role-Based Access Section */}
-      <section className="border-t border-border bg-muted/30 py-20">
+      <section className="border-t border-border bg-muted/30 py-12">
         <div className="container">
-          <div className="mx-auto max-w-2xl text-center mb-12">
-            <h2 className="font-display text-3xl font-bold text-foreground sm:text-4xl">
+          <div className="mx-auto max-w-2xl text-center mb-8">
+            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
               Designed for Everyone
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
               Tailored experiences for students, alumni, and faculty members.
             </p>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3">
             <Card className="border-primary/20 hover:border-primary/40 transition-colors">
               <CardContent className="p-6 text-center">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
@@ -253,17 +253,17 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20">
+      <section className="py-12">
         <div className="container">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
+          <div className="grid items-center gap-8 lg:grid-cols-2">
             <div>
-              <h2 className="font-display text-3xl font-bold text-foreground sm:text-4xl">
+              <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
                 Your Path to Professional Growth Starts Here
               </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
+              <p className="mt-3 text-lg text-muted-foreground">
                 Join thousands of students and alumni who are already benefiting from meaningful connections.
               </p>
-              <ul className="mt-8 space-y-4">
+              <ul className="mt-6 space-y-3">
                 {benefits.map((benefit, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />
@@ -271,7 +271,7 @@ const LandingPage: React.FC = () => {
                   </li>
                 ))}
               </ul>
-              <Button asChild className="mt-8 bg-primary hover:bg-primary/90">
+              <Button asChild className="mt-6 bg-primary hover:bg-primary/90">
                 <Link to="/auth?mode=signup">
                   Join AllySphere
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -291,21 +291,21 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Fundraising Teaser */}
-      <section className="border-t border-border bg-gradient-to-r from-primary/5 to-accent/5 py-20">
+      <section className="border-t border-border bg-gradient-to-r from-primary/5 to-accent/5 py-12">
         <div className="container">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary mb-6">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-4">
               <Heart className="h-4 w-4" />
               Give Back to Your Alma Mater
             </div>
-            <h2 className="font-display text-3xl font-bold text-foreground sm:text-4xl">
+            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
               Support the Next Generation
             </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
+            <p className="mt-3 text-lg text-muted-foreground">
               Contribute to scholarships, infrastructure, and college initiatives. 
               Your donations help shape the future of ACET students.
             </p>
-            <Button asChild size="lg" className="mt-8 bg-primary hover:bg-primary/90">
+            <Button asChild size="lg" className="mt-6 bg-primary hover:bg-primary/90">
               <Link to="/auth?mode=signup">
                 Start Contributing
                 <Heart className="ml-2 h-4 w-4" />
@@ -316,16 +316,16 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20">
+      <section className="py-12">
         <div className="container">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold text-foreground sm:text-4xl">
+            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
               Ready to Connect?
             </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
+            <p className="mt-3 text-lg text-muted-foreground">
               Join the AllySphere community and unlock your professional potential.
             </p>
-            <Button asChild size="lg" className="mt-8 bg-primary hover:bg-primary/90">
+            <Button asChild size="lg" className="mt-6 bg-primary hover:bg-primary/90">
               <Link to="/auth?mode=signup">
                 Get Started Free
                 <ArrowRight className="ml-2 h-4 w-4" />

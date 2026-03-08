@@ -32,7 +32,7 @@ const FundraisingProgress: React.FC<FundraisingProgressProps> = ({
   };
 
   return (
-    <section className="py-12 border-y border-border bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5">
+    <section className="py-8 border-y border-border bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5">
       <div className="container">
         <Card className="border-2 border-primary/20 bg-card/80 backdrop-blur overflow-hidden">
           <CardContent className="p-6 md:p-8">

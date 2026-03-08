@@ -69,8 +69,8 @@ const FeaturedAlumni: React.FC = () => {
 
   if (isLoading) {
     return (
-      <section className="py-16 bg-muted/30 border-y border-border">
-        <div className="container flex justify-center py-12">
+      <section className="py-10 bg-muted/30 border-y border-border">
+        <div className="container flex justify-center py-8">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       </section>
@@ -80,9 +80,9 @@ const FeaturedAlumni: React.FC = () => {
   if (featured.length === 0) return null;
 
   return (
-    <section className="py-16 bg-muted/30 border-y border-border">
+    <section className="py-10 bg-muted/30 border-y border-border">
       <div className="container">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-accent/10 px-4 py-1.5 text-sm font-medium text-accent mb-3">
               <Star className="h-4 w-4" />
