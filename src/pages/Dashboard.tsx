@@ -152,7 +152,34 @@ const Dashboard: React.FC = () => {
               {userRole === 'alumni' && 'Give back to your community — mentor, donate, and network.'}
               {(userRole === 'faculty' || userRole === 'admin') && 'Manage and oversee the alumni network.'}
             </p>
+        </div>
+
+        {/* Announcements Banner */}
+        {announcements.length > 0 && (
+          <div className="mb-8 space-y-3">
+            {announcements.map((announcement) => (
+              <div
+                key={announcement.id}
+                className="relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 via-primary/10 to-accent/5 p-5"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-foreground">{announcement.title}</p>
+                    <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+                      {announcement.content}
+                    </p>
+                    <p className="mt-2 text-xs text-muted-foreground/70">
+                      {new Date(announcement.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
+        )}
         </div>
 
         {/* Stats Cards */}
@@ -288,31 +315,6 @@ const Dashboard: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* Announcements */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Announcements</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {announcements.length > 0 ? (
-                  <div className="space-y-4">
-                    {announcements.map((announcement) => (
-                      <div key={announcement.id} className="border-b border-border pb-4 last:border-0 last:pb-0">
-                        <p className="font-medium text-foreground">{announcement.title}</p>
-                        <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                          {announcement.content}
-                        </p>
-                        <p className="mt-2 text-xs text-muted-foreground">
-                          {new Date(announcement.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No announcements yet.</p>
-                )}
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>
