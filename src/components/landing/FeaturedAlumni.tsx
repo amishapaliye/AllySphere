@@ -12,33 +12,48 @@ const FeaturedAlumni: React.FC = () => {
   const { data: featured = [], isLoading } = useQuery({
     queryKey: ['featured-alumni-landing'],
     queryFn: async () => {
-      const { data: contributions, error } = await supabase
-        .from('alumni_contributions')
-        .select('*')
-        .order('mentorships_completed', { ascending: false })
-        .limit(8);
+      // Get alumni user_ids
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('role', 'alumni')
+        .limit(50);
 
-      if (error) throw error;
-
-      const userIds = (contributions || []).map((c: any) => c.user_id);
+      const userIds = (roles || []).map((r: any) => r.user_id);
       if (userIds.length === 0) return [];
 
-      const [{ data: profiles }, { data: details }] = await Promise.all([
+      // Fetch profiles, details, and contributions in parallel
+      const [{ data: profiles }, { data: details }, { data: contributions }] = await Promise.all([
         supabase.from('profiles').select('user_id, full_name, avatar_url, graduation_year, department').in('user_id', userIds),
-        supabase.from('alumni_details').select('user_id, job_title, current_company, skills').in('user_id', userIds),
+        supabase.from('alumni_details').select('user_id, job_title, current_company, skills, years_of_experience, is_mentor_available, mentorship_areas').in('user_id', userIds),
+        supabase.from('alumni_contributions').select('*').in('user_id', userIds),
       ]);
 
-      const profilesMap = new Map((profiles || []).map((p: any) => [p.user_id, p]));
       const detailsMap = new Map((details || []).map((d: any) => [d.user_id, d]));
+      const contribMap = new Map((contributions || []).map((c: any) => [c.user_id, c]));
 
-      return (contributions || [])
-        .map((c: any) => {
-          const p = profilesMap.get(c.user_id);
-          const d = detailsMap.get(c.user_id);
-          if (!p) return null;
-          const score = (c.mentorships_completed * 10) + (c.referrals_made * 5) + (c.jobs_posted * 5) + (c.events_hosted * 8) + Number(c.total_donations) / 100;
+      return (profiles || [])
+        .map((p: any) => {
+          const d = detailsMap.get(p.user_id);
+          const c = contribMap.get(p.user_id);
+          // Activity score: profile completeness + contributions + experience
+          let score = 0;
+          if (d) {
+            score += (d.skills?.length || 0) * 2;
+            score += (d.years_of_experience || 0) * 3;
+            score += d.is_mentor_available ? 15 : 0;
+            score += (d.mentorship_areas?.length || 0) * 3;
+            score += d.job_title ? 5 : 0;
+            score += d.current_company ? 5 : 0;
+          }
+          if (c) {
+            score += (c.mentorships_completed * 10) + (c.referrals_made * 5) + (c.jobs_posted * 5) + (c.events_hosted * 8) + Number(c.total_donations) / 100;
+          }
+          if (p.avatar_url) score += 5;
+          if (p.graduation_year) score += 3;
+
           return {
-            id: c.user_id,
+            id: p.user_id,
             name: p.full_name,
             avatar: p.avatar_url,
             batch: p.graduation_year,
@@ -46,12 +61,10 @@ const FeaturedAlumni: React.FC = () => {
             company: d?.current_company || '',
             skills: d?.skills?.slice(0, 2) || [],
             score,
-            mentorships: c.mentorships_completed,
-            jobsPosted: c.jobs_posted,
-            referrals: c.referrals_made,
+            mentorAvailable: d?.is_mentor_available || false,
+            yearsExp: d?.years_of_experience || 0,
           };
         })
-        .filter(Boolean)
         .sort((a: any, b: any) => b.score - a.score)
         .slice(0, 4);
     },
