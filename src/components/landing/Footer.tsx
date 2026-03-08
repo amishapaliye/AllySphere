@@ -39,8 +39,8 @@ const Footer: React.FC = () => {
   return (
     <footer className="border-t border-border bg-card">
       {/* Contact Section */}
-      <div className="container py-12">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+      <div className="container py-8">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {/* Contact Info */}
           <div className="space-y-6">
             <h3 className="font-display text-lg font-bold text-foreground">Contact Us</h3>
@@ -140,8 +140,8 @@ const Footer: React.FC = () => {
 
       {/* Bottom Section */}
       <div className="border-t border-border">
-        <div className="container py-8">
-          <div className="flex flex-col items-center gap-6 md:flex-row md:justify-between">
+        <div className="container py-6">
+          <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
             {/* Logo and Description */}
             <div className="flex items-center gap-4">
               <img 
@@ -181,7 +181,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Copyright */}
-          <div className="mt-8 pt-6 border-t border-border text-center">
+          <div className="mt-6 pt-4 border-t border-border text-center">
             <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} AllySphere. All rights reserved.
             </p>
