@@ -167,19 +167,14 @@ const FeaturedAlumni: React.FC = () => {
                   )}
 
                   <div className="mt-3 flex flex-wrap gap-1 justify-center">
-                    {alumni.mentorships > 0 && (
+                    {alumni.mentorAvailable && (
                       <Badge className="text-xs bg-accent/10 text-accent border-accent/30">
-                        {alumni.mentorships} Mentorships
+                        Mentor
                       </Badge>
                     )}
-                    {alumni.jobsPosted > 0 && (
+                    {alumni.yearsExp > 0 && (
                       <Badge className="text-xs bg-accent/10 text-accent border-accent/30">
-                        {alumni.jobsPosted} Jobs Posted
-                      </Badge>
-                    )}
-                    {alumni.referrals > 0 && (
-                      <Badge className="text-xs bg-accent/10 text-accent border-accent/30">
-                        {alumni.referrals} Referrals
+                        {alumni.yearsExp}+ Yrs Exp
                       </Badge>
                     )}
                   </div>
