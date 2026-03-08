@@ -31,10 +31,9 @@ const Footer: React.FC = () => {
   ];
 
   const socialLinks = [
-    { icon: Facebook, label: 'Facebook', url: 'https://facebook.com' },
-    { icon: Linkedin, label: 'LinkedIn', url: 'https://linkedin.com' },
-    { icon: Twitter, label: 'Twitter', url: 'https://twitter.com' },
-    { icon: Instagram, label: 'Instagram', url: 'https://instagram.com' },
+    { icon: Facebook, label: 'Facebook', url: 'https://www.facebook.com/share/1AmV1SUSCq/?mibextid=wwXIfr' },
+    { icon: Linkedin, label: 'LinkedIn', url: 'https://www.linkedin.com/school/anjuman-college-of-engineering-&-technology/' },
+    { icon: Instagram, label: 'Instagram', url: 'https://www.instagram.com/acet.official?igsh=MXByanF5djk5eXV3eA==' },
   ];
 
   return (
