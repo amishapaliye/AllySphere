@@ -26,7 +26,10 @@ import {
   Briefcase,
   Heart,
   Trophy,
-  Newspaper
+  Newspaper,
+  MoreVertical,
+  Sparkles,
+  TrendingUp
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import acetLogo from '@/assets/acet-logo.jpeg';
