@@ -21,6 +21,11 @@ import LeaderboardPage from "./pages/LeaderboardPage";
 import ForumsPage from "./pages/ForumsPage";
 import ForumDetailPage from "./pages/ForumDetailPage";
 import SeedDataPage from "./pages/SeedDataPage";
+import AboutPage from "./pages/AboutPage";
+import AdvertisingPage from "./pages/AdvertisingPage";
+import AccessibilityPage from "./pages/AccessibilityPage";
+import HelpCenterPage from "./pages/HelpCenterPage";
+import PrivacyPage from "./pages/PrivacyPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
