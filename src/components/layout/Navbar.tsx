@@ -148,11 +148,10 @@ const Navbar: React.FC = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Mobile Menu Toggle */}
+              {/* Menu Toggle */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
                 {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -173,11 +172,11 @@ const Navbar: React.FC = () => {
         )}
       </div>
 
-      {/* Mobile Menu */}
+      {/* Slide-down Menu with all quick actions */}
       {user && mobileMenuOpen && (
-        <div className="border-t border-border bg-card lg:hidden">
+        <div className="border-t border-border bg-card">
           <div className="container py-4">
-            <div className="flex flex-col gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -198,6 +197,40 @@ const Navbar: React.FC = () => {
                   </Link>
                 );
               })}
+              <Link to="/alumni" onClick={() => setMobileMenuOpen(false)} className={cn('flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors', location.pathname === '/alumni' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}>
+                <Users className="h-5 w-5" />
+                Find Alumni
+              </Link>
+              <Link to="/mentorship" onClick={() => setMobileMenuOpen(false)} className={cn('flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors', location.pathname === '/mentorship' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}>
+                <GraduationCap className="h-5 w-5" />
+                Mentorship
+              </Link>
+              <Link to="/jobs" onClick={() => setMobileMenuOpen(false)} className={cn('flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors', location.pathname === '/jobs' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}>
+                <Briefcase className="h-5 w-5" />
+                Jobs
+              </Link>
+              <Link to="/events" onClick={() => setMobileMenuOpen(false)} className={cn('flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors', location.pathname === '/events' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}>
+                <Calendar className="h-5 w-5" />
+                Events
+              </Link>
+              <Link to="/forums" onClick={() => setMobileMenuOpen(false)} className={cn('flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors', location.pathname === '/forums' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}>
+                <Newspaper className="h-5 w-5" />
+                Forums
+              </Link>
+              <Link to="/messages" onClick={() => setMobileMenuOpen(false)} className={cn('flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors', location.pathname === '/messages' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}>
+                <MessageSquare className="h-5 w-5" />
+                Messages
+              </Link>
+              {(userRole === 'alumni' || userRole === 'faculty' || userRole === 'admin') && (
+                <Link to="/fundraising" onClick={() => setMobileMenuOpen(false)} className={cn('flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors', location.pathname === '/fundraising' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}>
+                  <Heart className="h-5 w-5" />
+                  Fundraising
+                </Link>
+              )}
+              <Link to="/leaderboard" onClick={() => setMobileMenuOpen(false)} className={cn('flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors', location.pathname === '/leaderboard' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground')}>
+                <Trophy className="h-5 w-5" />
+                Leaderboard
+              </Link>
             </div>
           </div>
         </div>
