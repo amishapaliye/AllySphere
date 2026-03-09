@@ -21,6 +21,11 @@ import LeaderboardPage from "./pages/LeaderboardPage";
 import ForumsPage from "./pages/ForumsPage";
 import ForumDetailPage from "./pages/ForumDetailPage";
 import SeedDataPage from "./pages/SeedDataPage";
+import AboutPage from "./pages/AboutPage";
+import AdvertisingPage from "./pages/AdvertisingPage";
+import AccessibilityPage from "./pages/AccessibilityPage";
+import HelpCenterPage from "./pages/HelpCenterPage";
+import PrivacyPage from "./pages/PrivacyPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +54,11 @@ const App = () => (
             <Route path="/forums" element={<ProtectedRoute><ForumsPage /></ProtectedRoute>} />
             <Route path="/forums/:forumId" element={<ProtectedRoute><ForumDetailPage /></ProtectedRoute>} />
             <Route path="/seed-data" element={<ProtectedRoute allowedRoles={['admin']}><SeedDataPage /></ProtectedRoute>} />
+            <Route path="/about" element={<ProtectedRoute><AboutPage /></ProtectedRoute>} />
+            <Route path="/advertising" element={<ProtectedRoute><AdvertisingPage /></ProtectedRoute>} />
+            <Route path="/accessibility" element={<ProtectedRoute><AccessibilityPage /></ProtectedRoute>} />
+            <Route path="/help-center" element={<ProtectedRoute><HelpCenterPage /></ProtectedRoute>} />
+            <Route path="/privacy" element={<ProtectedRoute><PrivacyPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
