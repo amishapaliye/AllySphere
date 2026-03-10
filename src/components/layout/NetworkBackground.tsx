@@ -115,7 +115,7 @@ const NetworkBackground: React.FC = () => {
         vy: (Math.random() - 0.5) * 0.08,
         icon: ICON_KEYS[Math.floor(Math.random() * ICON_KEYS.length)],
         size: 28 + Math.random() * 16,
-        opacity: 0.08 + Math.random() * 0.07,
+        opacity: 0.18 + Math.random() * 0.12,
         phase: Math.random() * Math.PI * 2,
         rotation: (Math.random() - 0.5) * 0.3,
       });
