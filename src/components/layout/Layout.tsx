@@ -16,7 +16,7 @@ const Layout: React.FC<LayoutProps> = ({ children, showNavbar = true }) => {
     <div className="min-h-screen flex flex-col relative">
       <NetworkBackground />
       {showNavbar && <Navbar />}
-      <main className="flex-1 relative z-10">{children}</main>
+      <main className="flex-1 relative z-10" style={{ position: 'relative', zIndex: 2 }}>{children}</main>
       {user && <AppFooter />}
     </div>
   );
