@@ -115,7 +115,7 @@ const NetworkBackground: React.FC = () => {
         vy: (Math.random() - 0.5) * 0.08,
         icon: ICON_KEYS[Math.floor(Math.random() * ICON_KEYS.length)],
         size: 28 + Math.random() * 16,
-        opacity: 0.08 + Math.random() * 0.07,
+        opacity: 0.18 + Math.random() * 0.12,
         phase: Math.random() * Math.PI * 2,
         rotation: (Math.random() - 0.5) * 0.3,
       });
@@ -206,7 +206,7 @@ const NetworkBackground: React.FC = () => {
         const dist = Math.sqrt(dx * dx + dy * dy);
         const maxDist = 280;
         if (dist < maxDist) {
-          const alpha = (1 - dist / maxDist) * 0.12;
+          const alpha = (1 - dist / maxDist) * 0.25;
           ctx.strokeStyle = `hsla(205, 35%, 75%, ${alpha})`;
           ctx.beginPath();
           ctx.moveTo(nodes[i].x, nodes[i].y);
@@ -225,7 +225,7 @@ const NetworkBackground: React.FC = () => {
     for (const node of nodes) {
       ctx.beginPath();
       ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(205, 35%, 80%, ${node.opacity * 1.2})`;
+      ctx.fillStyle = `hsla(205, 35%, 70%, ${node.opacity * 1.5})`;
       ctx.fill();
     }
 
@@ -276,7 +276,8 @@ const NetworkBackground: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none fixed inset-0 z-0"
+      className="pointer-events-none fixed inset-0"
+      style={{ zIndex: 1 }}
       aria-hidden="true"
     />
   );
