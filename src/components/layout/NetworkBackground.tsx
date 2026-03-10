@@ -225,7 +225,7 @@ const NetworkBackground: React.FC = () => {
     for (const node of nodes) {
       ctx.beginPath();
       ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(205, 35%, 80%, ${node.opacity * 1.2})`;
+      ctx.fillStyle = `hsla(205, 35%, 70%, ${node.opacity * 1.5})`;
       ctx.fill();
     }
 
