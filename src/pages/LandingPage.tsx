@@ -74,7 +74,7 @@ const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen relative z-10">
+    <div className="min-h-screen bg-background">
       {/* Header with College Branding */}
       <header className="border-b border-border bg-card/95 backdrop-blur sticky top-0 z-50">
         <div className="container flex h-20 items-center justify-between">

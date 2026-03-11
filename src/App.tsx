@@ -1,3 +1,5 @@
+
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,7 +8,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import BirthdayNotification from "@/components/birthday/BirthdayNotification";
-import NetworkBackground from "@/components/layout/NetworkBackground";
 import LandingPage from "./pages/LandingPage";
 import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
@@ -22,11 +23,7 @@ import LeaderboardPage from "./pages/LeaderboardPage";
 import ForumsPage from "./pages/ForumsPage";
 import ForumDetailPage from "./pages/ForumDetailPage";
 import SeedDataPage from "./pages/SeedDataPage";
-import AboutPage from "./pages/AboutPage";
-import AdvertisingPage from "./pages/AdvertisingPage";
-import AccessibilityPage from "./pages/AccessibilityPage";
-import HelpCenterPage from "./pages/HelpCenterPage";
-import PrivacyPage from "./pages/PrivacyPage";
+import AddEventPage from "./pages/AddEventPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,10 +34,10 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <NetworkBackground />
         <BrowserRouter>
           <BirthdayNotification />
           <Routes>
+
             <Route path="/" element={<LandingPage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -48,6 +45,7 @@ const App = () => (
             <Route path="/alumni/:userId" element={<ProtectedRoute><AlumniProfilePage /></ProtectedRoute>} />
             <Route path="/mentorship" element={<ProtectedRoute><MentorshipPage /></ProtectedRoute>} />
             <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
+            <Route path="/add-event" element={<ProtectedRoute allowedRoles={['admin']}><AddEventPage /></ProtectedRoute>} />
             <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/jobs" element={<ProtectedRoute><JobsPage /></ProtectedRoute>} />
@@ -56,11 +54,6 @@ const App = () => (
             <Route path="/forums" element={<ProtectedRoute><ForumsPage /></ProtectedRoute>} />
             <Route path="/forums/:forumId" element={<ProtectedRoute><ForumDetailPage /></ProtectedRoute>} />
             <Route path="/seed-data" element={<ProtectedRoute allowedRoles={['admin']}><SeedDataPage /></ProtectedRoute>} />
-            <Route path="/about" element={<ProtectedRoute><AboutPage /></ProtectedRoute>} />
-            <Route path="/advertising" element={<ProtectedRoute><AdvertisingPage /></ProtectedRoute>} />
-            <Route path="/accessibility" element={<ProtectedRoute><AccessibilityPage /></ProtectedRoute>} />
-            <Route path="/help-center" element={<ProtectedRoute><HelpCenterPage /></ProtectedRoute>} />
-            <Route path="/privacy" element={<ProtectedRoute><PrivacyPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
@@ -68,4 +61,5 @@ const App = () => (
     </AuthProvider>
   </QueryClientProvider>
 );
+
 export default App;

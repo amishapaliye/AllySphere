@@ -13,6 +13,9 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
   const { user, userRole, loading } = useAuth();
 
+  // TEMPORARY ADMIN EMAIL
+  const adminEmail = "khansuniya16@gmail.com";
+
   if (loading) {
     return (
       <Layout>
@@ -23,10 +26,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
     );
   }
 
+  // If user not logged in
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
 
+  // Allow admin email to bypass role check
+  if (allowedRoles?.includes("admin" as AppRole)) {
+    if (user.email !== adminEmail) {
+      return <Navigate to="/dashboard" replace />;
+    }
+  }
+
+  // Normal role check for other routes
   if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
     return <Navigate to="/dashboard" replace />;
   }
