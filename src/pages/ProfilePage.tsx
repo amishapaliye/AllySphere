@@ -33,15 +33,20 @@ const ProfilePage = () => {
     }
   }, [user, authLoading, navigate]);
 
-  // 🔥 FETCH PROFILE (FIXED → user_id)
+  // 🔥 FETCH PROFILE
   const fetchProfile = async () => {
     if (!user) return;
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('user_id', user.id)
       .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error(error);
+      return;
+    }
 
     if (data) {
       setFullName(data.full_name || '');
@@ -63,27 +68,34 @@ const ProfilePage = () => {
     fetchProfile();
   }, [user]);
 
-  // 🔥 SAVE PROFILE (FIXED → user_id + email required)
+  // 🔥 SAVE PROFILE (FINAL FIXED)
   const handleSave = async () => {
     if (!user) return;
 
     setSaving(true);
     try {
-      const { error } = await supabase.from('profiles').upsert({
-        user_id: user.id,            // ✅ FIXED
-        email: user.email,           // ✅ REQUIRED
-        full_name: fullName,
-        bio,
-        department,
-        graduation_year: graduationYear
-          ? parseInt(graduationYear)
-          : null,
-        phone,
-        linkedin_url: linkedinUrl,
-        date_of_birth: dateOfBirth
-          ? format(dateOfBirth, 'yyyy-MM-dd')
-          : null,
-      });
+      const { error } = await supabase
+        .from('profiles')
+        .upsert(
+          {
+            user_id: user.id,
+            email: user.email, // required
+            full_name: fullName,
+            bio,
+            department,
+            graduation_year: graduationYear
+              ? parseInt(graduationYear)
+              : null,
+            phone,
+            linkedin_url: linkedinUrl,
+            date_of_birth: dateOfBirth
+              ? format(dateOfBirth, 'yyyy-MM-dd')
+              : null,
+          },
+          {
+            onConflict: 'user_id', // 🔥 MAIN FIX
+          }
+        );
 
       if (error) throw error;
 
